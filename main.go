@@ -1,6 +1,7 @@
-package main
+package collycrawller
 
 import (
+	"colly_jingdong/anticrawl"
 	"fmt"
 
 	"github.com/gocolly/colly"
@@ -9,8 +10,8 @@ import (
 func main() {
 	// Instantiate default collector
 	c := colly.NewCollector(
-		// Visit only domains: hackerspaces.org, wiki.hackerspaces.org
-		colly.AllowedDomains("hackerspaces.org", "wiki.hackerspaces.org"),
+		// Visit only domains: tmall.com, list.tmall.com, detail.tmall.com
+		colly.AllowedDomains("tmall.com", "list.tmall.com", "detail.tmall.com"),
 	)
 
 	// On every a element which has href attribute call callback
@@ -25,6 +26,7 @@ func main() {
 
 	// Before making a request print "Visiting ..."
 	c.OnRequest(func(r *colly.Request) {
+		r.Headers.Set("User-Agent", anticrawl.RandomString())
 		fmt.Println("Visiting", r.URL.String())
 	})
 

@@ -1,0 +1,16 @@
+<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="141px" height="361px" viewBox="-0.5 -0.5 141 361" content="&lt;mxfile&gt;&lt;diagram id=&quot;EvR8ZKj7Lj6veky_GAft&quot; name=&quot;Page-1&quot;&gt;vZVNU7MwEMc/Ta5OIW21R6moF089+DzHDNlCxsB2Qmqpn96lbAqIOjqOcoDsfzcv+9sFhFyXzZ1Tu+IBNVgRz3Qj5I2I46Vc0r0VjixEi07IndGdFPXCxrwAizNW90ZDPQr0iNab3VjMsKog8yNNOYeHcdgW7XjXncphImwyZafqo9G+6NSr+LLX78HkRdg5Wq46T6lCMGdSF0rjYSDJVMi1Q/TdqGzWYFt2gUs37/YD7/lgDir/lQnMvfbHkBtoSpXNCit6JIUvLVkRDWlZd/xHxuxiEcz/rRmMm2ZkHdnqtmnX/vCgLNW4dxlHxVxb5XLgqPkZEjUXYAm0C4U4sMqb5/Hqisucn+N6EjRgGO+D4a2fld3zolNS1lLDtYC2xto1WnQnh5ydLtJr7/AJgodp8sLgPDSfw5imyRNkaJ/w/rB56JtRslQM+jBoP+Eiv8Nl0DjU6LvWD5XeeOW/Tm3o+QV0cvV37OZTdumVuE5FcivSlVhd0tiXytqLDMsJVsqZzpIoa/KKlIwSBgKUtDgMfZuu2VEards5iVZ1AZpfwDewt6frU9hbrPwvFSFeLkZFiObTIpy1YRXm368Cmf3n9OQb/JNk+go=&lt;/diagram&gt;&lt;/mxfile&gt;">
+    <defs/>
+    <g>
+        <path d="M 70 30 L 70 73.63" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 70 78.88 L 66.5 71.88 L 70 73.63 L 73.5 71.88 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
+        <ellipse cx="70" cy="15" rx="15" ry="15" fill="#000000" stroke="none" pointer-events="all"/>
+        <ellipse cx="70" cy="345" rx="11" ry="11" fill="#000000" stroke="#000000" pointer-events="all"/>
+        <ellipse cx="70" cy="345" rx="15" ry="15" fill="none" stroke="#000000" pointer-events="all"/>
+        <rect x="0" y="80" width="140" height="40" fill="#ffffff" stroke="#000000" pointer-events="all"/>
+        <g fill="#000000" font-family="Helvetica" text-anchor="middle" font-size="12px">
+            <text x="69.5" y="104.5">
+                访问tmall.com
+            </text>
+        </g>
+    </g>
+</svg>
