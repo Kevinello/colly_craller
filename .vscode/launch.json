@@ -9,7 +9,11 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "/root/colly_jingdong/main.go"
+            "program": "/root/colly_jingdong/main.go",
+            "env": {
+                "LOG_LEVEL": "DEBUG",
+                "MODULE_NAME": "collycrawller"
+            }
         }
     ]
 }
