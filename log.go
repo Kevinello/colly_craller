@@ -18,26 +18,27 @@ func init() {
 
 	// 日志等级默认为INFO
 	logLevel := go_logger.LOGGER_LEVEL_INFO
-	if strings.ToUpper(level) == "DEBUG" {
+	switch strings.ToUpper(level) {
+	case "DEBUG":
 		logLevel = go_logger.LOGGER_LEVEL_DEBUG
-	} else if strings.ToUpper(level) == "INFO" {
+	case "INFO":
 		logLevel = go_logger.LOGGER_LEVEL_INFO
-	} else if strings.ToUpper(level) == "ERROR" {
+	case "ERROR":
 		logLevel = go_logger.LOGGER_LEVEL_ERROR
-	} else if strings.ToUpper(level) == "EMERGENCY" {
+	case "EMERGENCY":
 		logLevel = go_logger.LOGGER_LEVEL_EMERGENCY
-	} else if strings.ToUpper(level) == "ALERT" {
+	case "ALERT":
 		logLevel = go_logger.LOGGER_LEVEL_ALERT
-	} else if strings.ToUpper(level) == "CRITICAL" {
+	case "CRITICAL":
 		logLevel = go_logger.LOGGER_LEVEL_CRITICAL
-	} else if strings.ToUpper(level) == "NOTICE" {
+	case "NOTICE":
 		logLevel = go_logger.LOGGER_LEVEL_NOTICE
-	} else if strings.ToUpper(level) == "WARNING" {
+	case "WARNING":
 		logLevel = go_logger.LOGGER_LEVEL_WARNING
 	}
+
 	consoleConfig := &go_logger.ConsoleConfig{
 		Format: "%timestamp_format% [%level_string%] [%file%:%function%](line %line%): %body%",
 	}
-	GLogger.Detach("console")
 	GLogger.Attach("console", logLevel, consoleConfig)
 }
