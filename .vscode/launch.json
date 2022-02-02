@@ -8,8 +8,8 @@
             "name": "colly",
             "type": "go",
             "request": "launch",
-            "mode": "auto",
-            "program": "/root/colly_jingdong/main.go",
+            "mode": "debug",
+            "program": "/root/colly_crawller/main/main.go",
             "env": {
                 "LOG_LEVEL": "DEBUG",
                 "MODULE_NAME": "collycrawller"
