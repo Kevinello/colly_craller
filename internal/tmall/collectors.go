@@ -1,4 +1,4 @@
-package collycrawller
+package tmall
 
 import (
 	"time"
@@ -6,6 +6,7 @@ import (
 	"github.com/gocolly/colly"
 	"github.com/gocolly/colly/extensions"
 	"github.com/gocolly/colly/queue"
+	"kevinello.ltd/kevinello/collycrawller/internal/pkg/log"
 )
 
 var (
@@ -28,7 +29,7 @@ func InitHomePageCollector() (err error) {
 	HomePageCollector = colly.NewCollector(
 		colly.AllowedDomains("tmall.com", "www.tmall.com"),
 		// colly.CacheDir("./cache"),
-		colly.Debugger(GLogger),
+		colly.Debugger(log.GLogger),
 	)
 	// 限制爬取速率
 	HomePageCollector.Limit(&colly.LimitRule{
