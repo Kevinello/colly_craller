@@ -5,17 +5,29 @@ import (
 
 	"github.com/gocolly/colly"
 	"github.com/gocolly/colly/extensions"
+	"github.com/gocolly/colly/queue"
 )
 
 var (
-	HomePageCollector *colly.Collector
+	HomePageCollector  *colly.Collector
+	CategoryCrawlQueue *queue.Queue
 )
 
+// init
+// @author: Kevineluo
 func init() {
-	// 初始化Collecctor
+	InitHomePageCollector()
+	InitCategoryQueue()
+}
+
+// InitHomePageCollector
+// @return err
+// @author: Kevineluo
+func InitHomePageCollector() (err error) {
+	// 初始化HomePageCollector
 	HomePageCollector = colly.NewCollector(
 		colly.AllowedDomains("tmall.com", "www.tmall.com"),
-		colly.CacheDir("./cache"),
+		// colly.CacheDir("./cache"),
 		colly.Debugger(GLogger),
 	)
 	// 限制爬取速率
@@ -29,9 +41,20 @@ func init() {
 	extensions.RandomUserAgent(HomePageCollector)
 	extensions.Referer(HomePageCollector)
 	// 找到Category
-	HomePageCollector.OnHTML("div[class~=Category--category]", func(h *colly.HTMLElement) {
-		GLogger.Info("Category found")
-		GLogger.Info(h.Text)
-	})
-	HomePageCollector.OnRequest(HandlerPrintUrl)
+	HomePageCollector.OnHTML(`script:contains(window\.\$data)`, HandlerGetCategoryUrl)
+	HomePageCollector.OnRequest(HandlerPrintRequestUrl)
+	HomePageCollector.OnResponse(HandlerPrintResponseUrl)
+	return
+}
+
+// InitCategoryQueue
+// @return err
+// @author: Kevineluo
+func InitCategoryQueue() (err error) {
+	// create a request queue with 2 consumer threads
+	CategoryCrawlQueue, err = queue.New(
+		2, // Number of consumer threads
+		&queue.InMemoryQueueStorage{MaxSize: 100}, // Use default queue storage
+	)
+	return
 }
