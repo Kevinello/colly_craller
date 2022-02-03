@@ -47,17 +47,17 @@ func HandlerGetCategoryUrl(h *colly.HTMLElement) {
 	}
 	for _, category := range categories {
 		if category.Action1 != "" {
-			GLogger.Infof("found category [%s], will add url [%s] to CategoryCrawlQueue", category.Title1, category.Action1)
+			GLogger.Infof("found category [%s], will add url [%v] to CategoryCrawlQueue", category.Title1, category.Action1)
 			CategoryCrawlQueue.AddURL(category.Action1)
 		}
 		if category.Action2 != "" {
-			GLogger.Infof("found category [%s], will add url [%s] to CategoryCrawlQueue", category.Title2, category.Action2)
+			GLogger.Infof("found category [%s], will add url [%v] to CategoryCrawlQueue", category.Title2, category.Action2)
 			CategoryCrawlQueue.AddURL(category.Action2)
 		}
 		if category.Action3 != "" {
-			GLogger.Infof("found category [%s], will add url [%s] to CategoryCrawlQueue", category.Title3, category.Action3)
+			GLogger.Infof("found category [%s], will add url [%v] to CategoryCrawlQueue", category.Title3, category.Action3)
 			CategoryCrawlQueue.AddURL(category.Action3)
 		}
 	}
-
+	return
 }

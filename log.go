@@ -25,7 +25,7 @@ func (l *_Logger) Init() error {
 
 func (l *_Logger) Event(e *debug.Event) {
 	i := atomic.AddInt32(&l.counter, 1)
-	l.Debugf("[%06d] %d [%6d - %s] %q (%s)\n", i, e.CollectorID, e.RequestID, e.Type, e.Values, time.Since(l.start))
+	l.Debugf("[%06d] %d [%06d - %s] %q (%s)\n", i, e.CollectorID, e.RequestID, e.Type, e.Values, time.Since(l.start))
 }
 
 var (
