@@ -3,10 +3,12 @@ package tmall
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 
-	"kevinello.ltd/kevinello/collycrawller/internal/pkg/log"
-	"kevinello.ltd/kevinello/collycrawller/internal/tmall/storage"
+	"kevinello.ltd/kevinello/collycrawler/internal/pkg/anticrawl"
+	"kevinello.ltd/kevinello/collycrawler/internal/pkg/log"
+	"kevinello.ltd/kevinello/collycrawler/internal/tmall/storage"
 
 	"github.com/gocolly/colly"
 	"github.com/mitchellh/mapstructure"
@@ -14,6 +16,16 @@ import (
 
 func HandlerPrintRequestUrl(r *colly.Request) {
 	log.GLogger.Infof("visiting %s", r.URL.String())
+}
+
+func HandlerSetCookie(r *colly.Request) {
+	log.GLogger.Infof("visiting %s, will set cookie for the request", r.URL.String())
+	cookieStr, err := anticrawl.GetCookieStr(os.Getenv("USERNAME"), os.Getenv("PASSWORD"))
+	if err != nil {
+		log.GLogger.Errorf("get cookieStr error: %s", err.Error())
+		return
+	}
+	r.Headers.Set("cookie", cookieStr)
 }
 
 func HandlerPrintResponseUrl(r *colly.Response) {

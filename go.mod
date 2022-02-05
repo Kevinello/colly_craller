@@ -1,4 +1,4 @@
-module kevinello.ltd/kevinello/collycrawller
+module kevinello.ltd/kevinello/collycrawler
 
 go 1.17
 

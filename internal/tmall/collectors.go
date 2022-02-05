@@ -6,7 +6,7 @@ import (
 	"github.com/gocolly/colly"
 	"github.com/gocolly/colly/extensions"
 	"github.com/gocolly/colly/queue"
-	"kevinello.ltd/kevinello/collycrawller/internal/pkg/log"
+	"kevinello.ltd/kevinello/collycrawler/internal/pkg/log"
 )
 
 var (
@@ -43,7 +43,7 @@ func InitHomePageCollector() (err error) {
 	extensions.Referer(HomePageCollector)
 	// 找到Category
 	HomePageCollector.OnHTML(`script:contains(window\.\$data)`, HandlerGetCategoryUrl)
-	HomePageCollector.OnRequest(HandlerPrintRequestUrl)
+	HomePageCollector.OnRequest(HandlerSetCookie)
 	HomePageCollector.OnResponse(HandlerPrintResponseUrl)
 	return
 }

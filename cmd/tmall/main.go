@@ -1,8 +1,8 @@
 package main
 
 import (
-	"kevinello.ltd/kevinello/collycrawller/internal/pkg/log"
-	"kevinello.ltd/kevinello/collycrawller/internal/tmall"
+	"kevinello.ltd/kevinello/collycrawler/internal/pkg/log"
+	"kevinello.ltd/kevinello/collycrawler/internal/tmall"
 )
 
 func main() {
