@@ -5,7 +5,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/tebeka/selenium"
 	"github.com/tebeka/selenium/chrome"
@@ -17,10 +16,22 @@ var (
 	CHROMEDRIVER_PATH        = pkg.GetEnv("CHROMEDRIVER_PATH", "/data/service/chromedriver")
 	CHROME_BINARY_PATH       = pkg.GetEnv("CHROME_BINARY_PATH", "/root/colly_crawler/vendor/chrome-linux/chrome")
 	SELENIUM_SERVICE_PORT, _ = strconv.Atoi(pkg.GetEnv("SELENIUM_SERVICE_PORT", "9000"))
+
+	SeleniumService *selenium.Service
 )
 
 func init() {
+	var err error
+	opts := []selenium.ServiceOption{
+		selenium.Output(os.Stderr),
+	}
+	selenium.SetDebug(true)
 
+	SeleniumService, err = selenium.NewChromeDriverService(CHROMEDRIVER_PATH, SELENIUM_SERVICE_PORT, opts...)
+	if err != nil {
+		fmt.Println("start chromedriver service failed", err.Error())
+		return
+	}
 }
 
 // Displayed
@@ -46,27 +57,17 @@ func Displayed(by, elementName string) func(selenium.WebDriver) (bool, error) {
 // @return err
 // @author: Kevineluo
 func GetCookieStr(usernameStr string, passwordStr string) (cookieStr string, err error) {
-	opts := []selenium.ServiceOption{
-		selenium.Output(os.Stderr),
-	}
-	selenium.SetDebug(true)
-
-	service, err := selenium.NewChromeDriverService(CHROMEDRIVER_PATH, SELENIUM_SERVICE_PORT, opts...)
-	if err != nil {
-		fmt.Println("start chromedriver service failed", err.Error())
-		return
-	}
-	defer service.Stop()
-
 	caps := selenium.Capabilities{"browserName": "chrome"}
-	// imagCaps 禁止图片加载，加快渲染速度
-	imagCaps := map[string]interface{}{
+	// prefs 禁止图片加载，加快渲染速度
+	prefs := map[string]interface{}{
 		"profile.managed_default_content_settings.images": 2,
 	}
 	// chromeCaps 设置浏览器参数，随机生成user-agent
 	chromeCaps := chrome.Capabilities{
-		Prefs: imagCaps,
+		Prefs: prefs,
 		Path:  CHROME_BINARY_PATH,
+		// 设置为开发者模式，防止被各大网站识别出来使用了Selenium
+		ExcludeSwitches: []string{"enable-automation"},
 		Args: []string{
 			"--headless",
 			"--no-sandbox",
@@ -87,16 +88,18 @@ func GetCookieStr(usernameStr string, passwordStr string) (cookieStr string, err
 		log.GLogger.Errorf("get page failed, error: %s", err.Error())
 		return
 	}
+	// 登录框在嵌套的iframe中，需要切过去
+	wd.SwitchFrame("J_loginIframe")
 	// 等待element加载完全
-	if err = wd.WaitWithTimeoutAndInterval(Displayed(selenium.ByCSSSelector, "#fm-login-id"), time.Second*5, time.Second); err != nil {
+	if err = wd.Wait(Displayed(selenium.ByCSSSelector, "#fm-login-id")); err != nil {
 		log.GLogger.Errorf(err.Error())
 		return
 	}
-	if err = wd.WaitWithTimeoutAndInterval(Displayed(selenium.ByCSSSelector, "#fm-login-password"), time.Second*5, time.Second); err != nil {
+	if err = wd.Wait(Displayed(selenium.ByCSSSelector, "#fm-login-password")); err != nil {
 		log.GLogger.Errorf(err.Error())
 		return
 	}
-	if err = wd.WaitWithTimeoutAndInterval(Displayed(selenium.ByCSSSelector, "#login-form > div.fm-btn > button"), time.Second*5, time.Second); err != nil {
+	if err = wd.Wait(Displayed(selenium.ByCSSSelector, "#login-form > div.fm-btn > button")); err != nil {
 		log.GLogger.Errorf(err.Error())
 		return
 	}
@@ -111,7 +114,7 @@ func GetCookieStr(usernameStr string, passwordStr string) (cookieStr string, err
 		log.GLogger.Errorf("get password failed, error: %s", err.Error())
 		return
 	}
-	login, err := wd.FindElement(selenium.ByCSSSelector, "button.fm-btn:contain(登录)")
+	login, err := wd.FindElement(selenium.ByCSSSelector, "#login-form > div.fm-btn > button")
 	if err != nil {
 		log.GLogger.Errorf("get login button failed, error: %s", err.Error())
 		return
@@ -138,7 +141,7 @@ func GetCookieStr(usernameStr string, passwordStr string) (cookieStr string, err
 		if err != nil {
 			return
 		}
-		if title != "天猫tmall.com--理想生活上天猫" {
+		if !strings.Contains(title, "理想生活上天猫") {
 			err = fmt.Errorf("not the target page!!!")
 			return
 		}
@@ -147,15 +150,6 @@ func GetCookieStr(usernameStr string, passwordStr string) (cookieStr string, err
 	})
 	if err != nil {
 		log.GLogger.Error(err.Error())
-		return
-	}
-	// 确认是否登陆成功
-	if err = wd.Wait(Displayed(selenium.ByCSSSelector, "#login-info1")); err != nil {
-		log.GLogger.Errorf(err.Error())
-		return
-	}
-	if err = wd.Wait(Displayed(selenium.ByCSSSelector, "span:contain(Hi)")); err != nil {
-		log.GLogger.Errorf(err.Error())
 		return
 	}
 
@@ -168,6 +162,7 @@ func GetCookieStr(usernameStr string, passwordStr string) (cookieStr string, err
 	for _, c := range cookieLst {
 		cookieArr = append(cookieArr, c.Name+"="+c.Value)
 	}
-	cookieStr = strings.Join(cookieArr, "; ")
+	cookieStr = strings.Join(cookieArr, ";")
+	log.GLogger.Logger.Debugf("Get cookieStr: %s", cookieStr)
 	return
 }
