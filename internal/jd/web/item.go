@@ -33,7 +33,7 @@ func ItemUrlHandler(itemUrlChan chan string) {
 		case url := <-itemUrlChan:
 			log.GLogger.Infof("Get item url: %s", url)
 			// 限制爬取速率
-			time.Sleep(time.Duration(ITEM_CRAWL_INTERVAL) * time.Second)
+			time.Sleep(time.Duration(ITEM_CRAWL_INTERVAL) * time.Millisecond)
 		}
 	}
 }
@@ -57,9 +57,17 @@ func CollectItemUrl(keyword string, urlChan chan string) {
 		log.GLogger.Errorf(err.Error())
 		return
 	}
-	if err = wd.WaitWithTimeoutAndInterval(CheckPageBottom(selenium.ByCSSSelector, "#J_bottomPage > span.p-num > a.pn-next > em"), 10*time.Second, time.Second); err != nil {
-		log.GLogger.Errorf(err.Error())
+	// if err = wd.WaitWithTimeoutAndInterval(CheckLoadMore(selenium.ByCSSSelector, "#J_scroll_loading"), 10*time.Second, time.Second); err != nil {
+	// 	log.GLogger.Errorf(err.Error())
+	// 	return
+	// }
+	body, err := wd.FindElement(selenium.ByCSSSelector, "body")
+	if err != nil {
+		log.GLogger.Errorf("get body failed, error: %s", err.Error())
 		return
+	}
+	for i := 0; i < 30; i++ {
+		body.SendKeys(selenium.EndKey)
 	}
 	itemList, err := wd.FindElements(selenium.ByCSSSelector, "div.gl-i-wrap > div.p-img > a")
 	if err != nil {
@@ -67,7 +75,7 @@ func CollectItemUrl(keyword string, urlChan chan string) {
 		return
 	}
 	for _, item := range itemList {
-		itemUrl, err := item.CSSProperty("href")
+		itemUrl, err := item.GetAttribute("href")
 		if err != nil {
 			log.GLogger.Errorf("get itemUrl failed, error: %s", err.Error())
 			continue
@@ -76,23 +84,28 @@ func CollectItemUrl(keyword string, urlChan chan string) {
 	}
 }
 
-func CheckPageBottom(by, elementName string) func(selenium.WebDriver) (bool, error) {
+func CheckLoadMore(by, elementName string) func(selenium.WebDriver) (bool, error) {
 	return func(wd selenium.WebDriver) (ok bool, err error) {
 		el, _ := wd.FindElement(by, elementName)
 		if el != nil {
 			ok, _ = el.IsDisplayed()
 		}
-		if !ok {
-			var body selenium.WebElement
+		if ok {
+			var (
+				body selenium.WebElement
+				pos  *selenium.Point
+			)
+			pos, err = el.Location()
+			if err != nil {
+				log.GLogger.Errorf("get body failed, error: %s", err.Error())
+				return
+			}
 			body, err = wd.FindElement(selenium.ByCSSSelector, "body")
 			if err != nil {
 				log.GLogger.Errorf("get body failed, error: %s", err.Error())
 				return
 			}
-			// 向页面发送五个空格键让页面下移
-			for i := 0; i < 5; i++ {
-				body.SendKeys(selenium.EndKey)
-			}
+			body.MoveTo(pos.X, pos.Y)
 		}
 		return
 	}
