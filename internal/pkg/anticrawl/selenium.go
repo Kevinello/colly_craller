@@ -67,13 +67,13 @@ func InitWebDriver() (wd selenium.WebDriver, err error) {
 	return
 }
 
-// Displayed
+// CheckDisplayed
 // @param by
 // @param elementName
 // @return selenium.WebDriver
 // @return func(selenium.WebDriver) (bool, error)
 // @author: Kevineluo
-func Displayed(by, elementName string) func(selenium.WebDriver) (bool, error) {
+func CheckDisplayed(by, elementName string) func(selenium.WebDriver) (bool, error) {
 	return func(wd selenium.WebDriver) (ok bool, err error) {
 		el, _ := wd.FindElement(by, elementName)
 		if el != nil {

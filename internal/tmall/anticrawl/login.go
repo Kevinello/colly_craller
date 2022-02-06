@@ -29,15 +29,15 @@ func GetTmallCookieStr(usernameStr string, passwordStr string) (cookieStr string
 	// 登录框在嵌套的iframe中，需要切过去
 	wd.SwitchFrame("J_loginIframe")
 	// 等待element加载完全
-	if err = wd.Wait(anticrawl.Displayed(selenium.ByCSSSelector, "#fm-login-id")); err != nil {
+	if err = wd.Wait(anticrawl.CheckDisplayed(selenium.ByCSSSelector, "#fm-login-id")); err != nil {
 		log.GLogger.Errorf(err.Error())
 		return
 	}
-	if err = wd.Wait(anticrawl.Displayed(selenium.ByCSSSelector, "#fm-login-password")); err != nil {
+	if err = wd.Wait(anticrawl.CheckDisplayed(selenium.ByCSSSelector, "#fm-login-password")); err != nil {
 		log.GLogger.Errorf(err.Error())
 		return
 	}
-	if err = wd.Wait(anticrawl.Displayed(selenium.ByCSSSelector, "#login-form > div.fm-btn > button")); err != nil {
+	if err = wd.Wait(anticrawl.CheckDisplayed(selenium.ByCSSSelector, "#login-form > div.fm-btn > button")); err != nil {
 		log.GLogger.Errorf(err.Error())
 		return
 	}
