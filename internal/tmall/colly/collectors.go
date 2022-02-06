@@ -1,4 +1,4 @@
-package tmall
+package colly
 
 import (
 	"time"

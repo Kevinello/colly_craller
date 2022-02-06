@@ -1,4 +1,4 @@
-package tmall
+package colly
 
 import (
 	"encoding/json"
@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"kevinello.ltd/kevinello/collycrawler/internal/pkg/anticrawl"
 	"kevinello.ltd/kevinello/collycrawler/internal/pkg/log"
+	"kevinello.ltd/kevinello/collycrawler/internal/tmall/anticrawl"
 	"kevinello.ltd/kevinello/collycrawler/internal/tmall/storage"
 
 	"github.com/gocolly/colly"
@@ -20,7 +20,7 @@ func HandlerPrintRequestUrl(r *colly.Request) {
 
 func HandlerSetCookie(r *colly.Request) {
 	log.GLogger.Infof("visiting %s, will set cookie for the request", r.URL.String())
-	cookieStr, err := anticrawl.GetCookieStr(os.Getenv("USERNAME"), os.Getenv("PASSWORD"))
+	cookieStr, err := anticrawl.GetTmallCookieStr(os.Getenv("USERNAME"), os.Getenv("PASSWORD"))
 	if err != nil {
 		log.GLogger.Errorf("get cookieStr error: %s", err.Error())
 		return
