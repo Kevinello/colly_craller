@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/tebeka/selenium"
+	"kevinello.ltd/kevinello/collycrawler/internal/jd/colly"
 	"kevinello.ltd/kevinello/collycrawler/internal/pkg"
 	"kevinello.ltd/kevinello/collycrawler/internal/pkg/anticrawl"
 	"kevinello.ltd/kevinello/collycrawler/internal/pkg/log"
@@ -32,6 +33,7 @@ func ItemUrlHandler(itemUrlChan chan string) {
 		select {
 		case url := <-itemUrlChan:
 			log.GLogger.Infof("Get item url: %s", url)
+			colly.ItemQueue.AddURL(url)
 			// 限制爬取速率
 			time.Sleep(time.Duration(ITEM_CRAWL_INTERVAL) * time.Millisecond)
 		}
