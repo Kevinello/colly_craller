@@ -40,7 +40,10 @@ func ItemUrlHandler(itemUrlChan chan string) {
 	}
 }
 
-func CollectItemUrl(keyword string, urlChan chan string) {
+func CollectItemUrl(keyword string, urlChan chan string, pageNum int) {
+	// 最后关闭SeleniumService
+	defer anticrawl.SeleniumService.Stop()
+
 	wd, err := anticrawl.InitWebDriver()
 	if err != nil {
 		log.GLogger.Errorf("InitWebDriver failed, error: %s", err.Error())
@@ -48,7 +51,7 @@ func CollectItemUrl(keyword string, urlChan chan string) {
 	}
 	defer wd.Quit()
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < pageNum; i++ {
 		searchUrl := fmt.Sprintf(searchUrlFmt, keyword, 2*i+1)
 		if err = wd.Get(searchUrl); err != nil {
 			log.GLogger.Errorf("get page failed, error: %s", err.Error())
