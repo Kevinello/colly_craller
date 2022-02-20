@@ -7,7 +7,9 @@ import (
 )
 
 func main() {
+
+	// 最后关闭SeleniumService
 	defer anticrawl.SeleniumService.Stop()
-	web.CollectItemUrl("口红", web.ItemUrlChan)
+	go web.CollectItemUrl("口红", web.ItemUrlChan)
 	colly.ItemQueue.Run(colly.ItemCollector)
 }

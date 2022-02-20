@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	searchUrlFmt = "https://search.jd.com/Search?keyword=%s"
+	searchUrlFmt = "https://search.jd.com/Search?keyword=%s&page=%d"
 )
 
 var (
@@ -48,41 +48,42 @@ func CollectItemUrl(keyword string, urlChan chan string) {
 	}
 	defer wd.Quit()
 
-	searchUrl := fmt.Sprintf(searchUrlFmt, keyword)
-	if err = wd.Get(searchUrl); err != nil {
-		log.GLogger.Errorf("get page failed, error: %s", err.Error())
-		return
-	}
-
-	// 等待element加载完全
-	if err = wd.Wait(anticrawl.CheckDisplayed(selenium.ByCSSSelector, "#J_goodsList")); err != nil {
-		log.GLogger.Errorf(err.Error())
-		return
-	}
-	// if err = wd.WaitWithTimeoutAndInterval(CheckLoadMore(selenium.ByCSSSelector, "#J_scroll_loading"), 10*time.Second, time.Second); err != nil {
-	// 	log.GLogger.Errorf(err.Error())
-	// 	return
-	// }
-	body, err := wd.FindElement(selenium.ByCSSSelector, "body")
-	if err != nil {
-		log.GLogger.Errorf("get body failed, error: %s", err.Error())
-		return
-	}
-	for i := 0; i < 30; i++ {
-		body.SendKeys(selenium.EndKey)
-	}
-	itemList, err := wd.FindElements(selenium.ByCSSSelector, "div.gl-i-wrap > div.p-img > a")
-	if err != nil {
-		log.GLogger.Errorf("get itemList failed, error: %s", err.Error())
-		return
-	}
-	for _, item := range itemList {
-		itemUrl, err := item.GetAttribute("href")
-		if err != nil {
-			log.GLogger.Errorf("get itemUrl failed, error: %s", err.Error())
-			continue
+	for i := 0; i < 10; i++ {
+		searchUrl := fmt.Sprintf(searchUrlFmt, keyword, 2*i+1)
+		if err = wd.Get(searchUrl); err != nil {
+			log.GLogger.Errorf("get page failed, error: %s", err.Error())
+			return
 		}
-		urlChan <- itemUrl
+
+		// 等待element加载完全
+		if err = wd.Wait(anticrawl.CheckDisplayed(selenium.ByCSSSelector, "#J_goodsList")); err != nil {
+			log.GLogger.Errorf(err.Error())
+			return
+		}
+
+		body, err := wd.FindElement(selenium.ByCSSSelector, "body")
+		if err != nil {
+			log.GLogger.Errorf("get body failed, error: %s", err.Error())
+			return
+		}
+
+		// 发送空格使页面滑到底
+		for i := 0; i < 30; i++ {
+			body.SendKeys(selenium.EndKey)
+		}
+		itemList, err := wd.FindElements(selenium.ByCSSSelector, "div.gl-i-wrap > div.p-img > a")
+		if err != nil {
+			log.GLogger.Errorf("get itemList failed, error: %s", err.Error())
+			return
+		}
+		for _, item := range itemList {
+			itemUrl, err := item.GetAttribute("href")
+			if err != nil {
+				log.GLogger.Errorf("get itemUrl failed, error: %s", err.Error())
+				continue
+			}
+			urlChan <- itemUrl
+		}
 	}
 }
 

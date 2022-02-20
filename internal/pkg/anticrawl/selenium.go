@@ -25,7 +25,9 @@ func init() {
 	opts := []selenium.ServiceOption{
 		selenium.Output(os.Stderr),
 	}
-	selenium.SetDebug(true)
+
+	// selenium 设置Debug模式，打印Debug日志
+	// selenium.SetDebug(true)
 
 	SeleniumService, err = selenium.NewChromeDriverService(CHROMEDRIVER_PATH, SELENIUM_SERVICE_PORT, opts...)
 	if err != nil {

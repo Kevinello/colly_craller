@@ -37,7 +37,7 @@ func InitItemCollector() {
 		"item.jd.com",
 	}
 	ItemCollector.OnRequest(HandlerFindItemIdFromUrl)
-	// ItemCollector.OnHTML("")
+	ItemCollector.OnHTML("div.itemInfo-wrap", HandlerParseItemInfo)
 }
 
 func InitItemQueue() (err error) {
