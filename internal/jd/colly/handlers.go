@@ -42,7 +42,7 @@ func HandlerFindItemIdFromUrl(r *colly.Request) {
 // @param r
 // @author: Kevineluo
 func HandlerCollectPrice(r *colly.Response) {
-	log.GLogger.Debugf("Get response: %s", string(r.Body))
+	// log.GLogger.Debugf("Get response: %s", string(r.Body))
 	jsonStr := string(r.Body)
 	jsonStr = strings.TrimSpace(jsonStr)
 
@@ -53,7 +53,7 @@ func HandlerCollectPrice(r *colly.Response) {
 		return
 	}
 	if len(priceResponse) > 0 {
-		log.GLogger.Infof("Collect price from Request[%s]: %s", r.Request.URL, priceResponse[0].Price)
+		log.GLogger.Infof("Collect price from Request[%s]: %+v", r.Request.URL, priceResponse[0])
 	} else {
 		log.GLogger.Errorf("Can't find price from Request[%s]", r.Request.URL)
 	}
@@ -63,7 +63,7 @@ func HandlerCollectPrice(r *colly.Response) {
 // @param r
 // @author: Kevineluo
 func HandlerCollectComment(r *colly.Response) {
-	log.GLogger.Debugf("Get response: %s", string(r.Body))
+	// log.GLogger.Debugf("Get response: %s", string(r.Body))
 	jsonStr := string(r.Body)
 	jsonStr = strings.TrimSpace(jsonStr)
 
