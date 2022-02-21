@@ -7,6 +7,7 @@ require (
 	github.com/mitchellh/mapstructure v1.4.3
 	github.com/phachon/go-logger v0.0.0-20191215032019-86e4227f71ea
 	github.com/tebeka/selenium v0.9.9
+	github.com/thoas/go-funk v0.9.1
 )
 
 require (

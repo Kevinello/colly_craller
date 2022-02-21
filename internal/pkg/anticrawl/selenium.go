@@ -2,7 +2,6 @@ package anticrawl
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 
 	"github.com/tebeka/selenium"
@@ -23,7 +22,9 @@ var (
 func init() {
 	var err error
 	opts := []selenium.ServiceOption{
-		selenium.Output(os.Stderr),
+
+		// 关闭selenium日志输出
+		selenium.Output(nil),
 	}
 
 	// selenium 设置Debug模式，打印Debug日志
