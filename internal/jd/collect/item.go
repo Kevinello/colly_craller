@@ -1,4 +1,4 @@
-package web
+package collect
 
 import (
 	"fmt"
@@ -25,7 +25,7 @@ var (
 )
 
 func init() {
-	go HandleItemUrl(ItemUrlChan)
+
 }
 
 func HandleItemUrl(itemUrlChan chan string) {

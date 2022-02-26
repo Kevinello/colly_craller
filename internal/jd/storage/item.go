@@ -1,9 +1,17 @@
 package storage
 
 type Item struct {
-	ItemID string
-	Price  int64
-	SkuNum int64
+	ItemID       string
+	Price        int64
+	AverageScore int64
+	CommentCount int64
+	SkuNum       int64
+}
+
+type ItemSaveMessage struct {
+	ItemID    string
+	SaveField string
+	SaveValue interface{}
 }
 
 type PriceResponse []struct {
@@ -48,3 +56,8 @@ type CommentResponse struct {
 		PoorRateStyle       int     `json:"PoorRateStyle"`
 	} `json:"CommentsCount"`
 }
+
+var (
+	// ItemStorageChan
+	ItemStorageChan = make(chan ItemSaveMessage, 30)
+)

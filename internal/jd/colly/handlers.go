@@ -38,7 +38,9 @@ func HandlerFindItemIdFromUrl(r *colly.Request) {
 }
 
 func HandlerCollectSkuNum(h *colly.HTMLElement) {
-
+	log.GLogger.Debug(h.Text)
+	skuSelection := h.DOM.Children()
+	log.GLogger.Infof("sku num: %d", skuSelection.Length())
 }
 
 // HandlerCollectPrice 从price接口收集商品价格

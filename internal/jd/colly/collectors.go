@@ -45,7 +45,7 @@ func InitItemCollector() {
 		"item.jd.com",
 	}
 	ItemCollector.OnRequest(HandlerFindItemIdFromUrl)
-	ItemCollector.OnHTML(`#choose-attr-1`, HandlerCollectSkuNum)
+	ItemCollector.OnHTML(`#choose-attr-1 > div.dd`, HandlerCollectSkuNum)
 }
 
 // InitPriceCollector 初始化PriceCollector
