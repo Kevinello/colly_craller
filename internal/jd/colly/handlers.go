@@ -35,6 +35,9 @@ func HandlerFindItemIdFromUrl(r *colly.Request) {
 	} else {
 		log.GLogger.Errorf("find item_id from url error, url: %s", r.URL.String())
 	}
+}
+
+func HandlerCollectSkuNum(h *colly.HTMLElement) {
 
 }
 

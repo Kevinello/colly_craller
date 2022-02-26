@@ -1,6 +1,8 @@
 package pkg
 
 import (
+	"os"
+
 	"kevinello.ltd/kevinello/collycrawler/internal/pkg/log"
 )
 
@@ -16,4 +18,5 @@ func CloseTicker() {
 	// 阻塞直到StopChan被close（因为StopChan无缓存只写，空结构体无法被接收）
 	StopChan <- struct{}{}
 	log.GLogger.Alert("receive stop signal, will stop programme")
+	os.Exit(-1)
 }

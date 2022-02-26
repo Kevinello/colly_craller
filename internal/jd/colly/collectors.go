@@ -18,17 +18,8 @@ var (
 )
 
 func init() {
-
-	// InitItemCollector 初始化ItemCollector
-	// @author: Kevineluo
 	InitItemCollector()
-
-	// InitPriceCollector 初始化PriceCollector
-	// @author: Kevineluo
 	InitPriceCollector()
-
-	// InitCommentCollector 初始化InitCommentCollector
-	// @author: Kevineluo
 	InitCommentCollector()
 
 	// 初始化Item爬取队列
@@ -38,6 +29,8 @@ func init() {
 	}
 }
 
+// InitItemCollector 初始化ItemCollector
+// @author: Kevineluo
 func InitItemCollector() {
 	ItemCollector = _colly.InitCollector()
 	// 限制爬取速率
@@ -52,8 +45,11 @@ func InitItemCollector() {
 		"item.jd.com",
 	}
 	ItemCollector.OnRequest(HandlerFindItemIdFromUrl)
+	ItemCollector.OnHTML(`#choose-attr-1`, HandlerCollectSkuNum)
 }
 
+// InitPriceCollector 初始化PriceCollector
+// @author: Kevineluo
 func InitPriceCollector() {
 	PriceCollector = _colly.InitCollector()
 	// 限制爬取速率
@@ -70,6 +66,8 @@ func InitPriceCollector() {
 	PriceCollector.OnResponse(HandlerCollectPrice)
 }
 
+// InitCommentCollector 初始化InitCommentCollector
+// @author: Kevineluo
 func InitCommentCollector() {
 	CommentCollector = _colly.InitCollector()
 	// 限制爬取速率

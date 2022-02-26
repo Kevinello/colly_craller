@@ -3,6 +3,7 @@ package storage
 type Item struct {
 	ItemID string
 	Price  int64
+	SkuNum int64
 }
 
 type PriceResponse []struct {
