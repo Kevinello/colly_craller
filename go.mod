@@ -3,6 +3,7 @@ module kevinello.ltd/kevinello/collycrawler
 go 1.17
 
 require (
+	github.com/deckarep/golang-set v1.8.0
 	github.com/gocolly/colly v1.2.0
 	github.com/mitchellh/mapstructure v1.4.3
 	github.com/phachon/go-logger v0.0.0-20191215032019-86e4227f71ea

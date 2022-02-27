@@ -28,7 +28,10 @@ func init() {
 
 }
 
-func HandleItemUrl(itemUrlChan chan string) {
+// StartCollectItem
+// @param itemUrlChan
+// @author: Kevineluo
+func StartCollectItem(itemUrlChan chan string) {
 	for {
 		select {
 		case url := <-itemUrlChan:
