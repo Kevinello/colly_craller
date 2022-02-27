@@ -15,9 +15,132 @@ type ItemStorage struct {
 
 type Item struct {
 	ItemID         string
-	Price          int64
-	SkuNum         int64
+	SkuNum         int
+	Price          *Price
+	ShopInfo       *ShopInfo
+	Promotion      *Promotion
 	CommentSummary *CommentSummary
+}
+
+type Price struct {
+	Epp             string `json:"epp"`
+	HagglePromotion bool   `json:"hagglePromotion"`
+	ID              string `json:"id"`
+	M               string `json:"m"`
+	Nup             string `json:"nup"`
+	Op              string `json:"op"`
+	P               string `json:"p"`
+	PlusTag         struct {
+		Limit     bool `json:"limit"`
+		Min       int  `json:"min"`
+		Max       int  `json:"max"`
+		Overlying bool `json:"overlying"`
+	} `json:"plusTag"`
+	Pp  string `json:"pp"`
+	Sdp string `json:"sdp"`
+	Sfp string `json:"sfp"`
+	Sp  string `json:"sp"`
+	Tkp string `json:"tkp"`
+	Tpp string `json:"tpp"`
+}
+
+type ShopInfo struct {
+	ShopTag struct {
+		Priority int    `json:"priority"`
+		ShopMark string `json:"shopMark"`
+		TagIcon  string `json:"tagIcon"`
+	} `json:"shopTag"`
+	Shop struct {
+		AvgEfficiencyScore float64 `json:"avgEfficiencyScore"`
+		AvgServiceScore    float64 `json:"avgServiceScore"`
+		AvgWareScore       float64 `json:"avgWareScore"`
+		Brief              string  `json:"brief"`
+		CardType           int     `json:"cardType"`
+		CateGoodShop       int     `json:"cateGoodShop"`
+		Diamond            bool    `json:"diamond"`
+		EfficiencyScore    float64 `json:"efficiencyScore"`
+		FollowCount        int     `json:"followCount"`
+		FollowText         string  `json:"followText"`
+		GiftIcon           string  `json:"giftIcon"`
+		GoodShop           int     `json:"goodShop"`
+		HasCoupon          bool    `json:"hasCoupon"`
+		Hotcates           []struct {
+			Cid          int    `json:"cid"`
+			Cname        string `json:"cname"`
+			CommendSkuID int64  `json:"commendSkuId"`
+			ImgPath      string `json:"imgPath"`
+		} `json:"hotcates"`
+		Hotcatestr           string  `json:"hotcatestr"`
+		IsSquareLogo         bool    `json:"isSquareLogo"`
+		LogisticsText        string  `json:"logisticsText"`
+		Logo                 string  `json:"logo"`
+		Name                 string  `json:"name"`
+		NameB                string  `json:"nameB"`
+		NewNum               int     `json:"newNum"`
+		PromotionNum         int     `json:"promotionNum"`
+		Score                float64 `json:"score"`
+		ServerText           string  `json:"serverText"`
+		ServiceScore         float64 `json:"serviceScore"`
+		ShopActivityTotalNum int     `json:"shopActivityTotalNum"`
+		ShopID               int     `json:"shopId"`
+		ShopImage            string  `json:"shopImage"`
+		ShopStateText        string  `json:"shopStateText"`
+		SignboardURL         string  `json:"signboardUrl"`
+		SkuCntText           string  `json:"skuCntText"`
+		SkuText              string  `json:"skuText"`
+		SquareLogo           string  `json:"squareLogo"`
+		Telephone            string  `json:"telephone"`
+		TotalNum             int     `json:"totalNum"`
+		VenderType           string  `json:"venderType"`
+		WareScore            float64 `json:"wareScore"`
+	} `json:"shop"`
+	CustomerService struct {
+		HasChat bool   `json:"hasChat"`
+		HasJimi bool   `json:"hasJimi"`
+		MLink   string `json:"mLink"`
+		Online  bool   `json:"online"`
+	} `json:"customerService"`
+}
+
+type Promotion struct {
+	Activity            []interface{} `json:"activity"`
+	Attach              []interface{} `json:"attach"`
+	CanReturnHaggleInfo bool          `json:"canReturnHaggleInfo"`
+	Customtag           struct {
+	} `json:"customtag"`
+	Gift []struct {
+		Mp        string `json:"mp"`
+		ProID     string `json:"proId"`
+		Num       string `json:"num"`
+		CustomTag struct {
+			Num1 string `json:"1"`
+		} `json:"customTag"`
+		Link         string `json:"link"`
+		Tip          string `json:"tip"`
+		Text         string `json:"text"`
+		ActivityType string `json:"activityType"`
+		Value        string `json:"value"`
+		SkuID        string `json:"skuId"`
+	} `json:"gift"`
+	GiftTips     string `json:"giftTips"`
+	IsBargain    bool   `json:"isBargain"`
+	IsTwoLine    bool   `json:"isTwoLine"`
+	LimitBuyInfo struct {
+		LimitNum   string `json:"limitNum"`
+		NoSaleFlag string `json:"noSaleFlag"`
+		ResultExt  struct {
+			IsPlusLimit string `json:"isPlusLimit"`
+		} `json:"resultExt"`
+	} `json:"limitBuyInfo"`
+	NormalMark     string `json:"normalMark"`
+	PlusMark       string `json:"plusMark"`
+	Prompt         string `json:"prompt"`
+	ScreenLiPurMap struct {
+	} `json:"screenLiPurMap"`
+	Tip                string        `json:"tip"`
+	Tips               []interface{} `json:"tips"`
+	UpgradePurchaseMap struct {
+	} `json:"upgradePurchaseMap"`
 }
 
 type CommentSummary struct {
@@ -39,20 +162,26 @@ type ItemSaveMessage struct {
 	SaveRes   chan int
 }
 
-// PriceResponse 价格查询接口返回结构体
-type PriceResponse []struct {
-	Price string `json:"p"`
-	Op    string `json:"op"`
-	Cbf   string `json:"cbf"`
-	ID    string `json:"id"`
-	M     string `json:"m"`
+// WareBussinessResponse 商品综合信息查询接口返回结构体
+type WareBussinessResponse struct {
+	RankUnited struct {
+		RevertItem struct {
+			ID          string `json:"id"`
+			Jump        string `json:"jump"`
+			JumpTypeInt int    `json:"jumpTypeInt"`
+			Name        string `json:"name"`
+			RankID      string `json:"rankId"`
+			RankTypeInt int    `json:"rankTypeInt"`
+		} `json:"revertItem"`
+	} `json:"rankUnited"`
+	Price     Price     `json:"price"`
+	ShopInfo  ShopInfo  `json:"shopInfo"`
+	Promotion Promotion `json:"promotion"`
 }
 
 // CommentResponse 评论查询接口返回结构体
 type CommentResponse struct {
 	CommentsCount []struct {
-		SkuID               int64   `json:"SkuId"`
-		ProductID           int64   `json:"ProductId"`
 		ShowCount           int64   `json:"ShowCount"`
 		ShowCountStr        string  `json:"ShowCountStr"`
 		CommentCountStr     string  `json:"CommentCountStr"`
@@ -62,25 +191,19 @@ type CommentResponse struct {
 		DefaultGoodCount    int64   `json:"DefaultGoodCount"`
 		GoodCountStr        string  `json:"GoodCountStr"`
 		GoodCount           int64   `json:"GoodCount"`
+		GoodRate            float64 `json:"GoodRate"`
 		AfterCount          int64   `json:"AfterCount"`
 		OneYear             int64   `json:"OneYear"`
 		AfterCountStr       string  `json:"AfterCountStr"`
 		VideoCount          int64   `json:"VideoCount"`
 		VideoCountStr       string  `json:"VideoCountStr"`
-		GoodRate            float64 `json:"GoodRate"`
-		GoodRateShow        int64   `json:"GoodRateShow"`
-		GoodRateStyle       int64   `json:"GoodRateStyle"`
 		GeneralCountStr     string  `json:"GeneralCountStr"`
 		GeneralCount        int64   `json:"GeneralCount"`
 		GeneralRate         float64 `json:"GeneralRate"`
-		GeneralRateShow     int64   `json:"GeneralRateShow"`
-		GeneralRateStyle    int64   `json:"GeneralRateStyle"`
 		PoorCountStr        string  `json:"PoorCountStr"`
 		PoorCount           int64   `json:"PoorCount"`
-		SensitiveBook       int64   `json:"SensitiveBook"`
 		PoorRate            float64 `json:"PoorRate"`
 		PoorRateShow        int64   `json:"PoorRateShow"`
-		PoorRateStyle       int64   `json:"PoorRateStyle"`
 	} `json:"CommentsCount"`
 }
 
@@ -122,7 +245,7 @@ func StartStorageItem(isc chan *ItemSaveMessage) {
 			if message.SaveField != "" && message.SaveValue != nil {
 				err := saveField(itemStorage.item, message.SaveField, message.SaveValue)
 				if err != nil {
-					log.GLogger.Errorf("error when saveField for item[%s], error: %s", message.ItemID, err.Error())
+					log.GLogger.Errorf("item[%s] --- error when saveField, error: %s", message.ItemID, err.Error())
 					// 返回存储状态
 					message.SaveRes <- StatusItemSaveFieldError
 					continue
@@ -130,14 +253,18 @@ func StartStorageItem(isc chan *ItemSaveMessage) {
 					log.GLogger.Infof("saveField for item[%s] success", message.ItemID)
 					itemStorage.savedFieldSet.Add(message.SaveField)
 					// 若存储字段数达到Item字段数，则进行持久化
-					if itemStorage.savedFieldSet.Cardinality() >= reflect.TypeOf(itemStorage.item).Elem().NumField() {
-						log.GLogger.Infof("item[%s] is ready(savedFieldNum: %d)", message.ItemID, itemStorage.savedFieldSet.Cardinality())
+					log.GLogger.Debugf("item[%s] --- saved field num: %d", message.ItemID, itemStorage.savedFieldSet.Cardinality())
+					if itemStorage.savedFieldSet.Cardinality() >= reflect.TypeOf(itemStorage.item).Elem().NumField()-1 {
+						log.GLogger.Infof("item[%s] --- item is ready(savedFieldNum: %d)", message.ItemID, itemStorage.savedFieldSet.Cardinality())
 						err := itemStorage.item.save()
 						if err != nil {
-							log.GLogger.Errorf("error when save item[%s], error: %s", message.ItemID, err.Error())
+							log.GLogger.Errorf("item[%s] --- error when save item, error: %s", message.ItemID, err.Error())
 							// 返回存储状态
 							message.SaveRes <- StatusItemStorageError
 							continue
+						} else {
+							// item持久化成功，清理ItemStorageMap
+							delete(ItemStorageMap, message.ItemID)
 						}
 					}
 				}

@@ -3,7 +3,7 @@ package colly
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
+	"reflect"
 	"strings"
 
 	"github.com/gocolly/colly"
@@ -12,7 +12,6 @@ import (
 )
 
 const (
-	priceUrlFormatter      = "https://p.3.cn/prices/mgets?skuIds=J_%s"
 	commentUrlFormatter    = "https://club.jd.com/comment/productCommentSummaries.action?referenceIds=%s"
 	wareBussinessFormatter = "https://item-soa.jd.com/getWareBusiness?&skuId=%s"
 )
@@ -30,6 +29,8 @@ func HandlerFindItemIdFromUrl(r *colly.Request) {
 		return
 	}
 	log.GLogger.Infof("find item_id: %s", itemID)
+	// 在collector的上下文中放入item_id
+	r.Ctx.Put("item_id", itemID)
 
 	// 存储ItemID到ItemStorageMap
 	saveRes := make(chan int)
@@ -40,12 +41,12 @@ func HandlerFindItemIdFromUrl(r *colly.Request) {
 	storage.ItemStorageChan <- itemSaveMessage
 	// 阻塞获取存储状态
 	status := <-saveRes
-	log.GLogger.Infof("item save status: %d", status)
+	log.GLogger.Infof("item[%s] --- item save status: %d", itemID, status)
 
 	// 在collector的上下文中放入item_id
-	PriceCollector.OnRequest(func(r *colly.Request) { r.Ctx.Put("item_id", itemID) })
-	priceUrl := fmt.Sprintf(priceUrlFormatter, itemID)
-	PriceCollector.Visit(priceUrl)
+	WareBussinessCollector.OnRequest(func(r *colly.Request) { r.Ctx.Put("item_id", itemID) })
+	wareBussinessUrl := fmt.Sprintf(wareBussinessFormatter, itemID)
+	WareBussinessCollector.Visit(wareBussinessUrl)
 
 	// 在collector的上下文中放入item_id
 	CommentCollector.OnRequest(func(r *colly.Request) { r.Ctx.Put("item_id", itemID) })
@@ -54,10 +55,11 @@ func HandlerFindItemIdFromUrl(r *colly.Request) {
 }
 
 func HandlerCollectSkuNum(h *colly.HTMLElement) {
-	skuSelection := h.DOM.Children()
-	log.GLogger.Infof("sku num: %d", skuSelection.Length())
-	// 存储ItemID到ItemStorageMap
 	itemID := h.Request.Ctx.Get("item_id")
+	skuSelection := h.DOM.Children()
+	log.GLogger.Infof("item[%s] --- collect sku num: %d", itemID, skuSelection.Length())
+
+	// 存储SkuNum到ItemStorageMap
 	saveRes := make(chan int)
 	itemSaveMessage := &storage.ItemSaveMessage{
 		ItemID:    itemID,
@@ -68,69 +70,85 @@ func HandlerCollectSkuNum(h *colly.HTMLElement) {
 	storage.ItemStorageChan <- itemSaveMessage
 	// 阻塞获取存储状态
 	status := <-saveRes
-	log.GLogger.Infof("item save status: %d", status)
+	log.GLogger.Infof("item[%s] --- item save status: %d", itemID, status)
 }
 
-// HandlerCollectPrice 从price接口收集商品价格
+// HandlerCollectWareBussiness 从price接口收集商品价格
 // @param r
 // @author: Kevineluo
-func HandlerCollectPrice(r *colly.Response) {
-	// log.GLogger.Debugf("Get response: %s", string(r.Body))
+func HandlerCollectWareBussiness(r *colly.Response) {
+	itemID := r.Request.Ctx.Get("item_id")
 	jsonStr := string(r.Body)
 	jsonStr = strings.TrimSpace(jsonStr)
 
-	priceResponses := storage.PriceResponse{}
-	err := json.Unmarshal([]byte(jsonStr), &priceResponses)
+	wareBussinessResponse := storage.WareBussinessResponse{}
+	err := json.Unmarshal([]byte(jsonStr), &wareBussinessResponse)
 	if err != nil {
-		log.GLogger.Errorf("error when Unmarshal PriceResponse of Request[%s]: %s", r.Request.URL, err.Error())
+		log.GLogger.Errorf("item[%s] --- error when Unmarshal PriceResponse of Request[%s]: %s", itemID, r.Request.URL, err.Error())
 		return
 	}
-	if len(priceResponses) > 0 {
-		log.GLogger.Infof("Collect price from Request[%s]: %+v", r.Request.URL, priceResponses[0])
+	if !reflect.DeepEqual(wareBussinessResponse, storage.WareBussinessResponse{}) {
+		log.GLogger.Debugf("item[%s] --- Collect wareBussiness from Request[%s]: %+v", itemID, r.Request.URL, wareBussinessResponse)
 	} else {
-		log.GLogger.Errorf("Can't find price from Request[%s]", r.Request.URL)
-		return
-	}
-	priceResponse := priceResponses[0]
-	price, err := strconv.Atoi(priceResponse.Price)
-	if err != nil {
-		log.GLogger.Errorf("illegal price[%s] from Request[%s]", priceResponse.Price, r.Request.URL)
+		log.GLogger.Errorf("item[%s] --- Can't find wareBussiness from the response of Request[%s]", itemID, r.Request.URL)
 		return
 	}
 
-	// 存储ItemID到ItemStorageMap
-	itemID := r.Request.Ctx.Get("item_id")
 	saveRes := make(chan int)
+	var status int
+	// 存储Price到ItemStorageMap
 	itemSaveMessage := &storage.ItemSaveMessage{
 		ItemID:    itemID,
 		SaveField: "Price",
-		SaveValue: price,
+		SaveValue: &wareBussinessResponse.Price,
 		SaveRes:   saveRes,
 	}
 	storage.ItemStorageChan <- itemSaveMessage
 	// 阻塞获取存储状态
-	status := <-saveRes
-	log.GLogger.Infof("item save status: %d", status)
+	status = <-saveRes
+	log.GLogger.Infof("item[%s] --- item save status: %d", itemID, status)
+	// 存储ShopInfo到ItemStorageMap
+	itemSaveMessage = &storage.ItemSaveMessage{
+		ItemID:    itemID,
+		SaveField: "ShopInfo",
+		SaveValue: &wareBussinessResponse.ShopInfo,
+		SaveRes:   saveRes,
+	}
+	storage.ItemStorageChan <- itemSaveMessage
+	// 阻塞获取存储状态
+	status = <-saveRes
+	log.GLogger.Infof("item[%s] --- item save status: %d", itemID, status)
+	// 存储Promotion到ItemStorageMap
+	itemSaveMessage = &storage.ItemSaveMessage{
+		ItemID:    itemID,
+		SaveField: "Promotion",
+		SaveValue: &wareBussinessResponse.Promotion,
+		SaveRes:   saveRes,
+	}
+	storage.ItemStorageChan <- itemSaveMessage
+	// 阻塞获取存储状态
+	status = <-saveRes
+	log.GLogger.Infof("item[%s] --- item save status: %d", itemID, status)
 }
 
 // HandlerCollectComment 从Comment接口收集评价信息
 // @param r
 // @author: Kevineluo
 func HandlerCollectComment(r *colly.Response) {
-	// log.GLogger.Debugf("Get response: %s", string(r.Body))
+	itemID := r.Request.Ctx.Get("item_id")
 	jsonStr := string(r.Body)
 	jsonStr = strings.TrimSpace(jsonStr)
 
 	commentResponse := storage.CommentResponse{}
 	err := json.Unmarshal([]byte(jsonStr), &commentResponse)
 	if err != nil {
-		log.GLogger.Errorf("error when Unmarshal CommentResponse of Request[%s]: %s", r.Request.URL, err.Error())
+		log.GLogger.Errorf("item[%s] --- error when Unmarshal CommentResponse of Request[%s]: %s", itemID, r.Request.URL, err.Error())
 		return
 	}
 	if len(commentResponse.CommentsCount) > 0 {
-		log.GLogger.Infof("Collect comment from Request[%s]: %+v", r.Request.URL, commentResponse.CommentsCount[0])
+		log.GLogger.Debugf("item[%s] --- Collect comment from Request[%s]: %+v", itemID, r.Request.URL, commentResponse.CommentsCount[0])
 	} else {
-		log.GLogger.Errorf("Can't find comment from Request[%s]", r.Request.URL)
+		log.GLogger.Errorf("item[%s] --- Can't find comment from Request[%s]", itemID, r.Request.URL)
 		return
 	}
 	commentCount := commentResponse.CommentsCount[0]
@@ -147,7 +165,6 @@ func HandlerCollectComment(r *colly.Response) {
 	}
 
 	// 存储ItemID到ItemStorageMap
-	itemID := r.Request.Ctx.Get("item_id")
 	saveRes := make(chan int)
 	itemSaveMessage := &storage.ItemSaveMessage{
 		ItemID:    itemID,
@@ -158,5 +175,5 @@ func HandlerCollectComment(r *colly.Response) {
 	storage.ItemStorageChan <- itemSaveMessage
 	// 阻塞获取存储状态
 	status := <-saveRes
-	log.GLogger.Infof("item save status: %d", status)
+	log.GLogger.Infof("item[%s] --- item save status: %d", itemID, status)
 }

@@ -11,15 +11,15 @@ import (
 )
 
 var (
-	ItemCollector    *colly.Collector
-	PriceCollector   *colly.Collector
-	CommentCollector *colly.Collector
-	ItemQueue        *queue.Queue
+	ItemCollector          *colly.Collector
+	WareBussinessCollector *colly.Collector
+	CommentCollector       *colly.Collector
+	ItemQueue              *queue.Queue
 )
 
 func init() {
 	InitItemCollector()
-	InitPriceCollector()
+	InitWareBussinessCollector()
 	InitCommentCollector()
 
 	// 初始化Item爬取队列
@@ -48,22 +48,22 @@ func InitItemCollector() {
 	ItemCollector.OnHTML(`#choose-attr-1 > div.dd`, HandlerCollectSkuNum)
 }
 
-// InitPriceCollector 初始化PriceCollector
+// InitWareBussinessCollector 初始化WareBussinessCollector
 // @author: Kevineluo
-func InitPriceCollector() {
-	PriceCollector = _colly.InitCollector()
+func InitWareBussinessCollector() {
+	WareBussinessCollector = _colly.InitCollector()
 	// 限制爬取速率
-	PriceCollector.Limit(&colly.LimitRule{
+	WareBussinessCollector.Limit(&colly.LimitRule{
 		// Set a delay between requests to these domains
 		Delay: 1 * time.Second,
 		// Add an additional random delay
 		RandomDelay: 1 * time.Second,
 	})
 	// 设置url过滤
-	PriceCollector.AllowedDomains = []string{
-		"p.3.cn",
+	WareBussinessCollector.AllowedDomains = []string{
+		"item-soa.jd.com",
 	}
-	PriceCollector.OnResponse(HandlerCollectPrice)
+	WareBussinessCollector.OnResponse(HandlerCollectWareBussiness)
 }
 
 // InitCommentCollector 初始化InitCommentCollector
