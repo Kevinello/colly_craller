@@ -23,135 +23,63 @@ type Item struct {
 }
 
 type Price struct {
-	Epp             string `json:"epp"`
 	HagglePromotion bool   `json:"hagglePromotion"`
-	ID              string `json:"id"`
-	M               string `json:"m"`
-	Nup             string `json:"nup"`
 	Op              string `json:"op"`
 	P               string `json:"p"`
-	PlusTag         struct {
-		Limit     bool `json:"limit"`
-		Min       int  `json:"min"`
-		Max       int  `json:"max"`
-		Overlying bool `json:"overlying"`
-	} `json:"plusTag"`
-	Pp  string `json:"pp"`
-	Sdp string `json:"sdp"`
-	Sfp string `json:"sfp"`
-	Sp  string `json:"sp"`
-	Tkp string `json:"tkp"`
-	Tpp string `json:"tpp"`
 }
 
 type ShopInfo struct {
-	ShopTag struct {
-		Priority int    `json:"priority"`
-		ShopMark string `json:"shopMark"`
-		TagIcon  string `json:"tagIcon"`
-	} `json:"shopTag"`
 	Shop struct {
-		AvgEfficiencyScore float64 `json:"avgEfficiencyScore"`
-		AvgServiceScore    float64 `json:"avgServiceScore"`
-		AvgWareScore       float64 `json:"avgWareScore"`
-		Brief              string  `json:"brief"`
-		CardType           int     `json:"cardType"`
-		CateGoodShop       int     `json:"cateGoodShop"`
-		Diamond            bool    `json:"diamond"`
-		EfficiencyScore    float64 `json:"efficiencyScore"`
-		FollowCount        int     `json:"followCount"`
-		FollowText         string  `json:"followText"`
-		GiftIcon           string  `json:"giftIcon"`
-		GoodShop           int     `json:"goodShop"`
-		HasCoupon          bool    `json:"hasCoupon"`
-		Hotcates           []struct {
-			Cid          int    `json:"cid"`
-			Cname        string `json:"cname"`
-			CommendSkuID int64  `json:"commendSkuId"`
-			ImgPath      string `json:"imgPath"`
-		} `json:"hotcates"`
-		Hotcatestr           string  `json:"hotcatestr"`
-		IsSquareLogo         bool    `json:"isSquareLogo"`
-		LogisticsText        string  `json:"logisticsText"`
-		Logo                 string  `json:"logo"`
-		Name                 string  `json:"name"`
-		NameB                string  `json:"nameB"`
-		NewNum               int     `json:"newNum"`
-		PromotionNum         int     `json:"promotionNum"`
-		Score                float64 `json:"score"`
-		ServerText           string  `json:"serverText"`
-		ServiceScore         float64 `json:"serviceScore"`
-		ShopActivityTotalNum int     `json:"shopActivityTotalNum"`
-		ShopID               int     `json:"shopId"`
-		ShopImage            string  `json:"shopImage"`
-		ShopStateText        string  `json:"shopStateText"`
-		SignboardURL         string  `json:"signboardUrl"`
-		SkuCntText           string  `json:"skuCntText"`
-		SkuText              string  `json:"skuText"`
-		SquareLogo           string  `json:"squareLogo"`
-		Telephone            string  `json:"telephone"`
-		TotalNum             int     `json:"totalNum"`
-		VenderType           string  `json:"venderType"`
-		WareScore            float64 `json:"wareScore"`
+		AvgEfficiencyScore   int    `json:"avgEfficiencyScore"`
+		AvgServiceScore      int    `json:"avgServiceScore"`
+		AvgWareScore         int    `json:"avgWareScore"`
+		CateGoodShop         int    `json:"cateGoodShop"`
+		Diamond              bool   `json:"diamond"`
+		FollowCount          int    `json:"followCount"`
+		GoodShop             int    `json:"goodShop"`
+		HasCoupon            bool   `json:"hasCoupon"`
+		Name                 string `json:"name"`
+		NewNum               int    `json:"newNum"`
+		PromotionNum         int    `json:"promotionNum"`
+		Score                int    `json:"score"`
+		ServiceScore         int    `json:"serviceScore"`
+		ShopActivityTotalNum int    `json:"shopActivityTotalNum"`
+		ShopID               int    `json:"shopId"`
+		TotalNum             int    `json:"totalNum"`
+		WareScore            int    `json:"wareScore"`
 	} `json:"shop"`
 	CustomerService struct {
-		HasChat bool   `json:"hasChat"`
-		HasJimi bool   `json:"hasJimi"`
-		MLink   string `json:"mLink"`
-		Online  bool   `json:"online"`
+		HasChat bool `json:"hasChat"`
+		HasJimi bool `json:"hasJimi"`
+		Online  bool `json:"online"`
 	} `json:"customerService"`
 }
 
 type Promotion struct {
-	Activity            []interface{} `json:"activity"`
-	Attach              []interface{} `json:"attach"`
-	CanReturnHaggleInfo bool          `json:"canReturnHaggleInfo"`
-	Customtag           struct {
-	} `json:"customtag"`
-	Gift []struct {
-		Mp        string `json:"mp"`
-		ProID     string `json:"proId"`
-		Num       string `json:"num"`
-		CustomTag struct {
-			Num1 string `json:"1"`
-		} `json:"customTag"`
-		Link         string `json:"link"`
-		Tip          string `json:"tip"`
-		Text         string `json:"text"`
+	Activity []struct {
 		ActivityType string `json:"activityType"`
-		Value        string `json:"value"`
-		SkuID        string `json:"skuId"`
-	} `json:"gift"`
-	GiftTips     string `json:"giftTips"`
-	IsBargain    bool   `json:"isBargain"`
-	IsTwoLine    bool   `json:"isTwoLine"`
-	LimitBuyInfo struct {
-		LimitNum   string `json:"limitNum"`
-		NoSaleFlag string `json:"noSaleFlag"`
-		ResultExt  struct {
-			IsPlusLimit string `json:"isPlusLimit"`
-		} `json:"resultExt"`
-	} `json:"limitBuyInfo"`
-	NormalMark     string `json:"normalMark"`
-	PlusMark       string `json:"plusMark"`
-	Prompt         string `json:"prompt"`
-	ScreenLiPurMap struct {
-	} `json:"screenLiPurMap"`
-	Tip                string        `json:"tip"`
-	Tips               []interface{} `json:"tips"`
-	UpgradePurchaseMap struct {
-	} `json:"upgradePurchaseMap"`
+		CustomTag    struct {
+		} `json:"customTag"`
+		PromoID    string `json:"promoId"`
+		Text       string `json:"text"`
+		TypeNumber string `json:"typeNumber"`
+		Value      string `json:"value"`
+	} `json:"activity"`
 }
 
 type CommentSummary struct {
-	AverageScore int64
-	CommentCount int64
-	GoodCount    int64
-	GoodRate     float64
-	GeneralCount int64
-	GeneralRate  float64
-	PoorCount    int64
-	PoorRate     float64
+	AverageScore    int64
+	CommentCountStr string
+	CommentCount    int64
+	GoodCountStr    string
+	GoodCount       int64
+	GoodRate        float64
+	GeneralCountStr string
+	GeneralCount    int64
+	GeneralRate     float64
+	PoorCountStr    string
+	PoorCount       int64
+	PoorRate        float64
 }
 
 // ItemSaveMessage Item存储

@@ -8,7 +8,7 @@ import (
 )
 
 // GenerateErrorFromList 聚合抛出error
-// Usage: defer kutil.GenerateErrorFromList(&err, errList)
+// Usage: defer GenerateErrorFromList(&err, errList)
 // @param errList
 // @return err
 func GenerateErrorFromList(err *error, errList []error) {

@@ -8,6 +8,7 @@ import (
 
 	"github.com/gocolly/colly"
 	"kevinello.ltd/kevinello/collycrawler/internal/jd/storage"
+	"kevinello.ltd/kevinello/collycrawler/internal/pkg"
 	"kevinello.ltd/kevinello/collycrawler/internal/pkg/log"
 )
 
@@ -54,6 +55,9 @@ func HandlerFindItemIdFromUrl(r *colly.Request) {
 	CommentCollector.Visit(commentUrl)
 }
 
+// HandlerCollectSkuNum
+// @param h
+// @author: Kevineluo
 func HandlerCollectSkuNum(h *colly.HTMLElement) {
 	itemID := h.Request.Ctx.Get("item_id")
 	skuSelection := h.DOM.Children()
@@ -153,15 +157,33 @@ func HandlerCollectComment(r *colly.Response) {
 	}
 	commentCount := commentResponse.CommentsCount[0]
 	// TODO: 价格转换
+	var (
+		errList []error
+		tmpErr  error
+	)
+	commentCount.CommentCount, tmpErr = ParseChinesePrice(commentCount.CommentCountStr)
+	errList = append(errList, tmpErr)
+	commentCount.GoodCount, tmpErr = ParseChinesePrice(commentCount.GoodCountStr)
+	errList = append(errList, tmpErr)
+	commentCount.GeneralCount, tmpErr = ParseChinesePrice(commentCount.GeneralCountStr)
+	errList = append(errList, tmpErr)
+	commentCount.PoorCount, tmpErr = ParseChinesePrice(commentCount.PoorCountStr)
+	errList = append(errList, tmpErr)
+	pkg.GenerateErrorFromList(&err, errList)
+
 	commentSummary := &storage.CommentSummary{
-		AverageScore: commentCount.AverageScore,
-		CommentCount: commentCount.CommentCount,
-		GoodCount:    commentCount.GoodCount,
-		GoodRate:     commentCount.GoodRate,
-		GeneralCount: commentCount.GeneralCount,
-		GeneralRate:  commentCount.GeneralRate,
-		PoorCount:    commentCount.PoorCount,
-		PoorRate:     commentCount.PoorRate,
+		AverageScore:    commentCount.AverageScore,
+		CommentCountStr: commentCount.CommentCountStr,
+		CommentCount:    commentCount.CommentCount,
+		GoodCountStr:    commentCount.GoodCountStr,
+		GoodCount:       commentCount.GoodCount,
+		GoodRate:        commentCount.GoodRate,
+		GeneralCountStr: commentCount.GeneralCountStr,
+		GeneralCount:    commentCount.GeneralCount,
+		GeneralRate:     commentCount.GeneralRate,
+		PoorCountStr:    commentCount.PoorCountStr,
+		PoorCount:       commentCount.PoorCount,
+		PoorRate:        commentCount.PoorRate,
 	}
 
 	// 存储ItemID到ItemStorageMap
