@@ -1,3 +1,6 @@
 .vscode
 cache
 dependencies
+pg.env
+pg_data
+deploy-postgres.sh
