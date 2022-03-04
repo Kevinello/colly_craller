@@ -3,6 +3,7 @@ package storage
 import (
 	"fmt"
 	"reflect"
+	"time"
 
 	mapset "github.com/deckarep/golang-set"
 	"kevinello.ltd/kevinello/collycrawler/internal/pkg/log"
@@ -14,94 +15,89 @@ type ItemStorage struct {
 }
 
 type Item struct {
-	ItemID         string
-	SkuNum         int
-	Price          *Price
-	ShopInfo       *ShopInfo
-	Promotion      *Promotion
-	CommentSummary *CommentSummary
+	ItemID          string    `gorm:"primary_key"`
+	CreateAt        time.Time `gorm:"primary_key"`
+	SkuNum          int
+	Price           *Price           `gorm:"foreignkey:ItemID,CreateAt;association_foreignkey:ItemID,CreateAt"`
+	Shop            *Shop            `gorm:"foreignkey:ItemID,CreateAt;association_foreignkey:ItemID,CreateAt"`
+	CustomerService *CustomerService `gorm:"foreignkey:ItemID,CreateAt;association_foreignkey:ItemID,CreateAt"`
+	Activities      *[]Activity      `gorm:"foreignkey:ItemID,CreateAt;association_foreignkey:ItemID,CreateAt"`
+	CommentSummary  *CommentSummary  `gorm:"foreignkey:ItemID,CreateAt;association_foreignkey:ItemID,CreateAt"`
 }
 
 type Price struct {
-	HagglePromotion bool   `json:"hagglePromotion"`
-	Op              string `json:"op"`
-	P               string `json:"p"`
+	ItemID          string    `gorm:"primary_key"`
+	CreateAt        time.Time `gorm:"primary_key"`
+	HagglePromotion bool      `json:"hagglePromotion"`
+	OriginPrice     string    `json:"op"`
+	Price           string    `json:"p"`
 }
 
 type ShopInfo struct {
-	Shop struct {
-		AvgEfficiencyScore   int    `json:"avgEfficiencyScore"`
-		AvgServiceScore      int    `json:"avgServiceScore"`
-		AvgWareScore         int    `json:"avgWareScore"`
-		CateGoodShop         int    `json:"cateGoodShop"`
-		Diamond              bool   `json:"diamond"`
-		FollowCount          int    `json:"followCount"`
-		GoodShop             int    `json:"goodShop"`
-		HasCoupon            bool   `json:"hasCoupon"`
-		Name                 string `json:"name"`
-		NewNum               int    `json:"newNum"`
-		PromotionNum         int    `json:"promotionNum"`
-		Score                int    `json:"score"`
-		ServiceScore         int    `json:"serviceScore"`
-		ShopActivityTotalNum int    `json:"shopActivityTotalNum"`
-		ShopID               int    `json:"shopId"`
-		TotalNum             int    `json:"totalNum"`
-		WareScore            int    `json:"wareScore"`
-	} `json:"shop"`
-	CustomerService struct {
-		HasChat bool `json:"hasChat"`
-		HasJimi bool `json:"hasJimi"`
-		Online  bool `json:"online"`
-	} `json:"customerService"`
+	Shop            Shop            `json:"shop"`
+	CustomerService CustomerService `json:"customerService"`
+}
+
+type Shop struct {
+	ItemID               string    `gorm:"primary_key"`
+	CreateAt             time.Time `gorm:"primary_key"`
+	AvgEfficiencyScore   float64   `json:"avgEfficiencyScore"`
+	AvgServiceScore      float64   `json:"avgServiceScore"`
+	AvgWareScore         float64   `json:"avgWareScore"`
+	CateGoodShop         int       `json:"cateGoodShop"`
+	Diamond              bool      `json:"diamond"`
+	FollowCount          int       `json:"followCount"`
+	GoodShop             int       `json:"goodShop"`
+	HasCoupon            bool      `json:"hasCoupon"`
+	Name                 string    `json:"name"`
+	NewNum               int       `json:"newNum"`
+	PromotionNum         int       `json:"promotionNum"`
+	Score                float64   `json:"score"`
+	ServiceScore         float64   `json:"serviceScore"`
+	ShopActivityTotalNum int       `json:"shopActivityTotalNum"`
+	ShopID               int       `json:"shopId"`
+	TotalNum             int       `json:"totalNum"`
+	WareScore            float64   `json:"wareScore"`
+}
+
+type CustomerService struct {
+	ItemID   string    `gorm:"primary_key"`
+	CreateAt time.Time `gorm:"primary_key"`
+	HasChat  bool      `json:"hasChat"`
+	HasJimi  bool      `json:"hasJimi"`
+	Online   bool      `json:"online"`
 }
 
 type Promotion struct {
-	Activity []struct {
-		ActivityType string `json:"activityType"`
-		CustomTag    struct {
-		} `json:"customTag"`
-		PromoID    string `json:"promoId"`
-		Text       string `json:"text"`
-		TypeNumber string `json:"typeNumber"`
-		Value      string `json:"value"`
-	} `json:"activity"`
+	Activities []Activity `json:"activity"`
+}
+
+type Activity struct {
+	ItemID       string    `gorm:"primary_key"`
+	CreateAt     time.Time `gorm:"primary_key"`
+	ActivityType string    `json:"activityType"`
+	PromoID      string    `json:"promoId"`
+	Text         string    `json:"text"`
+	TypeNumber   string    `json:"typeNumber"`
+	Value        string    `json:"value"`
 }
 
 type CommentSummary struct {
-	AverageScore    int64
-	CommentCountStr string
-	CommentCount    int64
-	GoodCountStr    string
-	GoodCount       int64
-	GoodRate        float64
-	GeneralCountStr string
-	GeneralCount    int64
-	GeneralRate     float64
-	PoorCountStr    string
-	PoorCount       int64
-	PoorRate        float64
-}
-
-// ItemSaveMessage Item存储
-type ItemSaveMessage struct {
-	ItemID    string
-	SaveField string
-	SaveValue interface{}
-	SaveRes   chan int
+	ItemID       string    `gorm:"primary_key"`
+	CreateAt     time.Time `gorm:"primary_key"`
+	AverageScore int64
+	CommentCount int64
+	GoodCountStr string
+	GoodCount    int64
+	GoodRate     float64
+	GeneralCount int64
+	GeneralRate  float64
+	PoorCount    int64
+	PoorRate     float64
 }
 
 // WareBussinessResponse 商品综合信息查询接口返回结构体
 type WareBussinessResponse struct {
-	RankUnited struct {
-		RevertItem struct {
-			ID          string `json:"id"`
-			Jump        string `json:"jump"`
-			JumpTypeInt int    `json:"jumpTypeInt"`
-			Name        string `json:"name"`
-			RankID      string `json:"rankId"`
-			RankTypeInt int    `json:"rankTypeInt"`
-		} `json:"revertItem"`
-	} `json:"rankUnited"`
 	Price     Price     `json:"price"`
 	ShopInfo  ShopInfo  `json:"shopInfo"`
 	Promotion Promotion `json:"promotion"`
@@ -135,6 +131,14 @@ type CommentResponse struct {
 	} `json:"CommentsCount"`
 }
 
+// ItemSaveMessage Item存储
+type ItemSaveMessage struct {
+	ItemID    string
+	SaveField string
+	SaveValue interface{}
+	SaveRes   chan int
+}
+
 var (
 	ItemStorageMap = make(map[string]*ItemStorage)
 	// ItemStorageChan Item存储channel，保证ItemStorageMap的线程安全
@@ -162,9 +166,9 @@ func StartStorageItem(isc chan *ItemSaveMessage) {
 			itemStorage, exist := ItemStorageMap[message.ItemID]
 			// ItemStorageMap中不存在则初始化Item
 			if !exist {
-				fieldSet := mapset.NewSet()
+				fieldSet := mapset.NewSet("ItemID", "SaveTime")
 				itemStorage = &ItemStorage{
-					item:          &Item{ItemID: message.ItemID},
+					item:          &Item{ItemID: message.ItemID, CreateAt: time.Now()},
 					savedFieldSet: fieldSet,
 				}
 				ItemStorageMap[message.ItemID] = itemStorage
@@ -182,7 +186,7 @@ func StartStorageItem(isc chan *ItemSaveMessage) {
 					itemStorage.savedFieldSet.Add(message.SaveField)
 					// 若存储字段数达到Item字段数，则进行持久化
 					log.GLogger.Debugf("item[%s] --- saved field num: %d", message.ItemID, itemStorage.savedFieldSet.Cardinality())
-					if itemStorage.savedFieldSet.Cardinality() >= reflect.TypeOf(itemStorage.item).Elem().NumField()-1 {
+					if itemStorage.savedFieldSet.Cardinality() >= reflect.TypeOf(itemStorage.item).Elem().NumField() {
 						log.GLogger.Infof("item[%s] --- item is ready(savedFieldNum: %d)", message.ItemID, itemStorage.savedFieldSet.Cardinality())
 						err := itemStorage.item.save()
 						if err != nil {

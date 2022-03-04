@@ -88,7 +88,7 @@ func HandlerCollectWareBussiness(r *colly.Response) {
 	wareBussinessResponse := storage.WareBussinessResponse{}
 	err := json.Unmarshal([]byte(jsonStr), &wareBussinessResponse)
 	if err != nil {
-		log.GLogger.Errorf("item[%s] --- error when Unmarshal PriceResponse of Request[%s]: %s", itemID, r.Request.URL, err.Error())
+		log.GLogger.Errorf("item[%s] --- error when Unmarshal wareBussinessResponse of Request[%s]: %s", itemID, r.Request.URL, err.Error())
 		return
 	}
 	if !reflect.DeepEqual(wareBussinessResponse, storage.WareBussinessResponse{}) {
@@ -97,6 +97,14 @@ func HandlerCollectWareBussiness(r *colly.Response) {
 		log.GLogger.Errorf("item[%s] --- Can't find wareBussiness from the response of Request[%s]", itemID, r.Request.URL)
 		return
 	}
+
+	// 填充itemID
+	wareBussinessResponse.Price.ItemID = itemID
+	for idx := range wareBussinessResponse.Promotion.Activities {
+		wareBussinessResponse.Promotion.Activities[idx].ItemID = itemID
+	}
+	wareBussinessResponse.ShopInfo.Shop.ItemID = itemID
+	wareBussinessResponse.ShopInfo.CustomerService.ItemID = itemID
 
 	saveRes := make(chan int)
 	var status int
@@ -111,22 +119,33 @@ func HandlerCollectWareBussiness(r *colly.Response) {
 	// 阻塞获取存储状态
 	status = <-saveRes
 	log.GLogger.Infof("item[%s] --- item save status: %d", itemID, status)
-	// 存储ShopInfo到ItemStorageMap
+	// 存储Shop到ItemStorageMap
 	itemSaveMessage = &storage.ItemSaveMessage{
 		ItemID:    itemID,
-		SaveField: "ShopInfo",
-		SaveValue: &wareBussinessResponse.ShopInfo,
+		SaveField: "Shop",
+		SaveValue: &wareBussinessResponse.ShopInfo.Shop,
 		SaveRes:   saveRes,
 	}
 	storage.ItemStorageChan <- itemSaveMessage
 	// 阻塞获取存储状态
 	status = <-saveRes
 	log.GLogger.Infof("item[%s] --- item save status: %d", itemID, status)
-	// 存储Promotion到ItemStorageMap
+	// 存储CustomerService到ItemStorageMap
 	itemSaveMessage = &storage.ItemSaveMessage{
 		ItemID:    itemID,
-		SaveField: "Promotion",
-		SaveValue: &wareBussinessResponse.Promotion,
+		SaveField: "CustomerService",
+		SaveValue: &wareBussinessResponse.ShopInfo.CustomerService,
+		SaveRes:   saveRes,
+	}
+	storage.ItemStorageChan <- itemSaveMessage
+	// 阻塞获取存储状态
+	status = <-saveRes
+	log.GLogger.Infof("item[%s] --- item save status: %d", itemID, status)
+	// 存储Activities到ItemStorageMap
+	itemSaveMessage = &storage.ItemSaveMessage{
+		ItemID:    itemID,
+		SaveField: "Activities",
+		SaveValue: &wareBussinessResponse.Promotion.Activities,
 		SaveRes:   saveRes,
 	}
 	storage.ItemStorageChan <- itemSaveMessage
@@ -172,18 +191,16 @@ func HandlerCollectComment(r *colly.Response) {
 	pkg.GenerateErrorFromList(&err, errList)
 
 	commentSummary := &storage.CommentSummary{
-		AverageScore:    commentCount.AverageScore,
-		CommentCountStr: commentCount.CommentCountStr,
-		CommentCount:    commentCount.CommentCount,
-		GoodCountStr:    commentCount.GoodCountStr,
-		GoodCount:       commentCount.GoodCount,
-		GoodRate:        commentCount.GoodRate,
-		GeneralCountStr: commentCount.GeneralCountStr,
-		GeneralCount:    commentCount.GeneralCount,
-		GeneralRate:     commentCount.GeneralRate,
-		PoorCountStr:    commentCount.PoorCountStr,
-		PoorCount:       commentCount.PoorCount,
-		PoorRate:        commentCount.PoorRate,
+		ItemID:       itemID,
+		AverageScore: commentCount.AverageScore,
+		CommentCount: commentCount.CommentCount,
+		GoodCountStr: commentCount.GoodCountStr,
+		GoodCount:    commentCount.GoodCount,
+		GoodRate:     commentCount.GoodRate,
+		GeneralCount: commentCount.GeneralCount,
+		GeneralRate:  commentCount.GeneralRate,
+		PoorCount:    commentCount.PoorCount,
+		PoorRate:     commentCount.PoorRate,
 	}
 
 	// 存储ItemID到ItemStorageMap
