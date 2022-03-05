@@ -91,6 +91,8 @@ func HandlerCollectSkuNum(h *colly.HTMLElement) {
 // @author: Kevineluo
 func HandlerCollectWareBussiness(r *colly.Response) {
 	itemID := r.Request.Ctx.Get("item_id")
+	ua := r.Request.Headers.Get("user-agent")
+	log.GLogger.Infof("item[%s] --- user-agent is %s", itemID, ua)
 	jsonStr := string(r.Body)
 	jsonStr = strings.TrimSpace(jsonStr)
 
@@ -237,7 +239,6 @@ func HandlerCollectComment(r *colly.Response) {
 		ItemID:       itemID,
 		AverageScore: commentCount.AverageScore,
 		CommentCount: commentCount.CommentCount,
-		GoodCountStr: commentCount.GoodCountStr,
 		GoodCount:    commentCount.GoodCount,
 		GoodRate:     commentCount.GoodRate,
 		GeneralCount: commentCount.GeneralCount,

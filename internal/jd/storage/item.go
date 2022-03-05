@@ -87,7 +87,6 @@ type CommentSummary struct {
 	CreateAt     time.Time `gorm:"primary_key"`
 	AverageScore int64
 	CommentCount int64
-	GoodCountStr string
 	GoodCount    int64
 	GoodRate     float64
 	GeneralCount int64
