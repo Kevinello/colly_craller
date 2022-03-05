@@ -96,7 +96,8 @@ func HandlerCollectWareBussiness(r *colly.Response) {
 	err := json.Unmarshal([]byte(jsonStr), &wareBussinessResponse)
 	if err != nil {
 		log.GLogger.Errorf("item[%s] --- error when Unmarshal wareBussinessResponse of Request[%s]: %s", itemID, r.Request.URL, err.Error())
-		time.Sleep(2 * time.Second)
+		// log.GLogger.Infof("---------- wait for 20s ----------")
+		// time.Sleep(20 * time.Second)
 		err := json.Unmarshal([]byte(jsonStr), &wareBussinessResponse)
 		if err != nil {
 			log.GLogger.Errorf("item[%s] --- error when Unmarshal wareBussinessResponse of Request[%s]: %s", itemID, r.Request.URL, err.Error())
@@ -164,6 +165,8 @@ func HandlerCollectWareBussiness(r *colly.Response) {
 	// 阻塞获取存储状态
 	status = <-saveRes
 	log.GLogger.Infof("item[%s] --- item save status: %d", itemID, status)
+	log.GLogger.Infof("---------- wait for 10s ----------")
+	// time.Sleep(10 * time.Second)
 }
 
 // HandlerCollectComment 从Comment接口收集评价信息

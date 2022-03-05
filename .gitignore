@@ -7,4 +7,5 @@ deploy-postgres.sh
 grafana-storage
 loki
 jd
+!internal/jd
 jdcrawler.log

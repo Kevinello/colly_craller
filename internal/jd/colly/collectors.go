@@ -1,32 +1,22 @@
 package colly
 
 import (
-	"os"
 	"time"
 
 	"github.com/gocolly/colly"
-	"github.com/gocolly/colly/queue"
 	_colly "kevinello.ltd/kevinello/collycrawler/internal/pkg/colly"
-	"kevinello.ltd/kevinello/collycrawler/internal/pkg/log"
 )
 
 var (
 	ItemCollector          *colly.Collector
 	WareBussinessCollector *colly.Collector
 	CommentCollector       *colly.Collector
-	ItemQueue              *queue.Queue
 )
 
 func init() {
 	InitItemCollector()
 	InitWareBussinessCollector()
 	InitCommentCollector()
-
-	// 初始化Item爬取队列
-	if err := InitItemQueue(); err != nil {
-		log.GLogger.Errorf("InitItemQueue error: %s", err.Error())
-		os.Exit(1)
-	}
 }
 
 // InitItemCollector 初始化ItemCollector
@@ -82,9 +72,4 @@ func InitCommentCollector() {
 		"club.jd.com",
 	}
 	CommentCollector.OnResponse(HandlerCollectComment)
-}
-
-func InitItemQueue() (err error) {
-	ItemQueue, err = _colly.InitCrawlQueue(2, &queue.InMemoryQueueStorage{MaxSize: 1000})
-	return
 }

@@ -36,19 +36,9 @@ func StartCollectItem(itemUrlChan chan string) {
 		select {
 		case url := <-itemUrlChan:
 			log.GLogger.Infof("Get item url: %s", url)
-			colly.ItemQueue.AddURL(url)
-			size, err := colly.ItemQueue.Size()
-			if err != nil {
-				log.GLogger.Errorf("error when get the size of ItemQueue")
-				// 限制爬取速率
-				time.Sleep(time.Duration(ITEM_CRAWL_INTERVAL) * time.Millisecond)
-				continue
-			}
-			log.GLogger.Infof("Size of ItemQueue: [%d]", size)
-			if size >= 10 {
-				colly.ItemQueue.Run(colly.ItemCollector)
-			}
+			colly.ItemCollector.Visit(url)
 			// 限制爬取速率
+			log.GLogger.Infof("---------- wait for %dms ----------", ITEM_CRAWL_INTERVAL)
 			time.Sleep(time.Duration(ITEM_CRAWL_INTERVAL) * time.Millisecond)
 		}
 	}
