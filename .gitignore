@@ -4,3 +4,7 @@ dependencies
 pg.env
 pg_data
 deploy-postgres.sh
+grafana-storage
+loki
+jd
+jdcrawler.log

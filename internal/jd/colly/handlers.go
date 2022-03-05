@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/gocolly/colly"
 	"kevinello.ltd/kevinello/collycrawler/internal/jd/storage"
@@ -44,10 +45,16 @@ func HandlerFindItemIdFromUrl(r *colly.Request) {
 	status := <-saveRes
 	log.GLogger.Infof("item[%s] --- item save status: %d", itemID, status)
 
+	// 限制爬取速率
+	time.Sleep(time.Second)
+
 	// 在collector的上下文中放入item_id
 	WareBussinessCollector.OnRequest(func(r *colly.Request) { r.Ctx.Put("item_id", itemID) })
 	wareBussinessUrl := fmt.Sprintf(wareBussinessFormatter, itemID)
 	WareBussinessCollector.Visit(wareBussinessUrl)
+
+	// 限制爬取速率
+	time.Sleep(time.Second)
 
 	// 在collector的上下文中放入item_id
 	CommentCollector.OnRequest(func(r *colly.Request) { r.Ctx.Put("item_id", itemID) })
@@ -89,7 +96,12 @@ func HandlerCollectWareBussiness(r *colly.Response) {
 	err := json.Unmarshal([]byte(jsonStr), &wareBussinessResponse)
 	if err != nil {
 		log.GLogger.Errorf("item[%s] --- error when Unmarshal wareBussinessResponse of Request[%s]: %s", itemID, r.Request.URL, err.Error())
-		return
+		time.Sleep(2 * time.Second)
+		err := json.Unmarshal([]byte(jsonStr), &wareBussinessResponse)
+		if err != nil {
+			log.GLogger.Errorf("item[%s] --- error when Unmarshal wareBussinessResponse of Request[%s]: %s", itemID, r.Request.URL, err.Error())
+			return
+		}
 	}
 	if !reflect.DeepEqual(wareBussinessResponse, storage.WareBussinessResponse{}) {
 		log.GLogger.Debugf("item[%s] --- Collect wareBussiness from Request[%s]: %+v", itemID, r.Request.URL, wareBussinessResponse)

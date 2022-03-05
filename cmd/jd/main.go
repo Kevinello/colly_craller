@@ -7,14 +7,12 @@ import (
 )
 
 func main() {
-	// start collect job
-	go collect.CollectItemUrl("口红", collect.ItemUrlChan, 10)
-
 	// ready to storage item
 	go storage.StartStorageItem(storage.ItemStorageChan)
-
 	// ready to collect item
 	go collect.StartCollectItem(collect.ItemUrlChan)
+	// start collect job
+	go collect.CollectItemUrl(pkg.GetEnv("SEARCH_KEYWORD", "美妆"), collect.ItemUrlChan, 100)
 
 	// 程序结束运行，关闭ticker
 	defer close(pkg.StopChan)

@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	CHROMEDRIVER_PATH        = pkg.GetEnv("CHROMEDRIVER_PATH", "/data/service/chromedriver")
-	CHROME_BINARY_PATH       = pkg.GetEnv("CHROME_BINARY_PATH", "/root/colly_crawler/vendor/chrome-linux/chrome")
+	CHROMEDRIVER_PATH        = pkg.GetEnv("CHROMEDRIVER_PATH", "/root/colly_crawler/dependencies/chromedriver")
+	CHROME_BINARY_PATH       = pkg.GetEnv("CHROME_BINARY_PATH", "/root/colly_crawler/dependencies/chrome-linux/chrome")
 	SELENIUM_SERVICE_PORT, _ = strconv.Atoi(pkg.GetEnv("SELENIUM_SERVICE_PORT", "9000"))
 
 	SeleniumService *selenium.Service
