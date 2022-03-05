@@ -8,8 +8,10 @@ import (
 	"time"
 
 	"github.com/gocolly/colly"
+	"github.com/tebeka/selenium"
 	"kevinello.ltd/kevinello/collycrawler/internal/jd/storage"
 	"kevinello.ltd/kevinello/collycrawler/internal/pkg"
+	"kevinello.ltd/kevinello/collycrawler/internal/pkg/anticrawl"
 	"kevinello.ltd/kevinello/collycrawler/internal/pkg/log"
 )
 
@@ -96,9 +98,35 @@ func HandlerCollectWareBussiness(r *colly.Response) {
 	err := json.Unmarshal([]byte(jsonStr), &wareBussinessResponse)
 	if err != nil {
 		log.GLogger.Errorf("item[%s] --- error when Unmarshal wareBussinessResponse of Request[%s]: %s", itemID, r.Request.URL, err.Error())
-		// log.GLogger.Infof("---------- wait for 20s ----------")
-		// time.Sleep(20 * time.Second)
-		err := json.Unmarshal([]byte(jsonStr), &wareBussinessResponse)
+		wd, err := anticrawl.InitWebDriver()
+		if err != nil {
+			log.GLogger.Errorf("item[%s] --- error when using selenium to InitWebDriver of Request[%s]: %s", itemID, r.Request.URL, err.Error())
+			return
+		}
+		defer wd.Quit()
+		// 进入页面
+		if err = wd.Get(r.Request.URL.String()); err != nil {
+			log.GLogger.Errorf("get page failed, error: %s", err.Error())
+			return
+		}
+		// 等待element加载完全
+		if err = wd.Wait(anticrawl.CheckDisplayed(selenium.ByCSSSelector, "body > pre")); err != nil {
+			log.GLogger.Errorf(err.Error())
+			return
+		}
+		response, err := wd.FindElement(selenium.ByCSSSelector, "body > pre")
+		if err != nil {
+			log.GLogger.Errorf("item[%s] --- error when using selenium to get response of Request[%s]: %s", itemID, r.Request.URL, err.Error())
+			return
+		}
+		jsonStr, err = response.Text()
+		if err != nil {
+			log.GLogger.Errorf("item[%s] --- error when using selenium to get text of Request[%s]: %s", itemID, r.Request.URL, err.Error())
+			return
+		}
+		jsonStr = strings.TrimSpace(jsonStr)
+
+		err = json.Unmarshal([]byte(jsonStr), &wareBussinessResponse)
 		if err != nil {
 			log.GLogger.Errorf("item[%s] --- error when Unmarshal wareBussinessResponse of Request[%s]: %s", itemID, r.Request.URL, err.Error())
 			return

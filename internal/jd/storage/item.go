@@ -18,11 +18,11 @@ type Item struct {
 	ItemID          string    `gorm:"primary_key"`
 	CreateAt        time.Time `gorm:"primary_key"`
 	SkuNum          int
-	Price           *Price           `gorm:"foreignkey:ItemID,CreateAt;association_foreignkey:ItemID,CreateAt"`
-	Shop            *Shop            `gorm:"foreignkey:ItemID,CreateAt;association_foreignkey:ItemID,CreateAt"`
-	CustomerService *CustomerService `gorm:"foreignkey:ItemID,CreateAt;association_foreignkey:ItemID,CreateAt"`
-	Activities      *[]Activity      `gorm:"foreignkey:ItemID,CreateAt;association_foreignkey:ItemID,CreateAt"`
-	CommentSummary  *CommentSummary  `gorm:"foreignkey:ItemID,CreateAt;association_foreignkey:ItemID,CreateAt"`
+	Price           *Price           `gorm:"foreignkey:ItemID,CreateAt;association_foreignkey:ItemID,CreateAt;constraint:OnDelete:CASCADE"`
+	Shop            *Shop            `gorm:"foreignkey:ItemID,CreateAt;association_foreignkey:ItemID,CreateAt;constraint:OnDelete:CASCADE"`
+	CustomerService *CustomerService `gorm:"foreignkey:ItemID,CreateAt;association_foreignkey:ItemID,CreateAt;constraint:OnDelete:CASCADE"`
+	Activities      *[]Activity      `gorm:"foreignkey:ItemID,CreateAt;association_foreignkey:ItemID,CreateAt;constraint:OnDelete:CASCADE"`
+	CommentSummary  *CommentSummary  `gorm:"foreignkey:ItemID,CreateAt;association_foreignkey:ItemID,CreateAt;constraint:OnDelete:CASCADE"`
 }
 
 type Price struct {
